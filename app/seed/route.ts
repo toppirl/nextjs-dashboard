@@ -7,7 +7,7 @@ const client = await db.connect();
 async function seedUsers() {
   await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
   await client.sql`
-    CREATE TABLE IF NOT EXISTS users (
+    CREATE TABLE IF NOT EXISTS nextjs_users (
       id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
       email TEXT NOT NULL UNIQUE,
@@ -19,7 +19,7 @@ async function seedUsers() {
     users.map(async (user) => {
       const hashedPassword = await bcrypt.hash(user.password, 10);
       return client.sql`
-        INSERT INTO users (id, name, email, password)
+        INSERT INTO nextjs_users (id, name, email, password)
         VALUES (${user.id}, ${user.name}, ${user.email}, ${hashedPassword})
         ON CONFLICT (id) DO NOTHING;
       `;
@@ -33,7 +33,7 @@ async function seedInvoices() {
   await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
 
   await client.sql`
-    CREATE TABLE IF NOT EXISTS invoices (
+    CREATE TABLE IF NOT EXISTS nextjs_invoices (
       id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
       customer_id UUID NOT NULL,
       amount INT NOT NULL,
@@ -45,7 +45,7 @@ async function seedInvoices() {
   const insertedInvoices = await Promise.all(
     invoices.map(
       (invoice) => client.sql`
-        INSERT INTO invoices (customer_id, amount, status, date)
+        INSERT INTO nextjs_invoices (customer_id, amount, status, date)
         VALUES (${invoice.customer_id}, ${invoice.amount}, ${invoice.status}, ${invoice.date})
         ON CONFLICT (id) DO NOTHING;
       `,
@@ -59,7 +59,7 @@ async function seedCustomers() {
   await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
 
   await client.sql`
-    CREATE TABLE IF NOT EXISTS customers (
+    CREATE TABLE IF NOT EXISTS nextjs_customers (
       id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
       email VARCHAR(255) NOT NULL,
@@ -70,7 +70,7 @@ async function seedCustomers() {
   const insertedCustomers = await Promise.all(
     customers.map(
       (customer) => client.sql`
-        INSERT INTO customers (id, name, email, image_url)
+        INSERT INTO nextjs_customers (id, name, email, image_url)
         VALUES (${customer.id}, ${customer.name}, ${customer.email}, ${customer.image_url})
         ON CONFLICT (id) DO NOTHING;
       `,
@@ -82,7 +82,7 @@ async function seedCustomers() {
 
 async function seedRevenue() {
   await client.sql`
-    CREATE TABLE IF NOT EXISTS revenue (
+    CREATE TABLE IF NOT EXISTS nextjs_revenue (
       month VARCHAR(4) NOT NULL UNIQUE,
       revenue INT NOT NULL
     );
@@ -91,7 +91,7 @@ async function seedRevenue() {
   const insertedRevenue = await Promise.all(
     revenue.map(
       (rev) => client.sql`
-        INSERT INTO revenue (month, revenue)
+        INSERT INTO nextjs_revenue (month, revenue)
         VALUES (${rev.month}, ${rev.revenue})
         ON CONFLICT (month) DO NOTHING;
       `,
