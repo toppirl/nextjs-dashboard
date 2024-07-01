@@ -92,22 +92,22 @@ export async function fetchFilteredInvoices(
   try {
     const invoices = await sql<InvoicesTable>`
       SELECT
-        invoices.id,
-        invoices.amount,
-        invoices.date,
-        invoices.status,
-        customers.name,
-        customers.email,
-        customers.image_url
-      FROM invoices
-      JOIN customers ON invoices.customer_id = customers.id
+        nextjs_invoices.id,
+        nextjs_invoices.amount,
+        nextjs_invoices.date,
+        nextjs_invoices.status,
+        nextjs_customers.name,
+        nextjs_customers.email,
+        nextjs_customers.image_url
+      FROM nextjs_invoices
+      JOIN nextjs_customers ON nextjs_invoices.customer_id = nextjs_customers.id
       WHERE
-        customers.name ILIKE ${`%${query}%`} OR
-        customers.email ILIKE ${`%${query}%`} OR
-        invoices.amount::text ILIKE ${`%${query}%`} OR
-        invoices.date::text ILIKE ${`%${query}%`} OR
-        invoices.status ILIKE ${`%${query}%`}
-      ORDER BY invoices.date DESC
+        nextjs_customers.name ILIKE ${`%${query}%`} OR
+        nextjs_customers.email ILIKE ${`%${query}%`} OR
+        nextjs_invoices.amount::text ILIKE ${`%${query}%`} OR
+        nextjs_invoices.date::text ILIKE ${`%${query}%`} OR
+        nextjs_invoices.status ILIKE ${`%${query}%`}
+      ORDER BY nextjs_invoices.date DESC
       LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
     `;
 
@@ -121,14 +121,14 @@ export async function fetchFilteredInvoices(
 export async function fetchInvoicesPages(query: string) {
   try {
     const count = await sql`SELECT COUNT(*)
-    FROM invoices
-    JOIN customers ON invoices.customer_id = customers.id
+    FROM nextjs_invoices
+    JOIN nextjs_customers ON nextjs_invoices.customer_id = nextjs_customers.id
     WHERE
-      customers.name ILIKE ${`%${query}%`} OR
-      customers.email ILIKE ${`%${query}%`} OR
-      invoices.amount::text ILIKE ${`%${query}%`} OR
-      invoices.date::text ILIKE ${`%${query}%`} OR
-      invoices.status ILIKE ${`%${query}%`}
+      nextjs_customers.name ILIKE ${`%${query}%`} OR
+      nextjs_customers.email ILIKE ${`%${query}%`} OR
+      nextjs_invoices.amount::text ILIKE ${`%${query}%`} OR
+      nextjs_invoices.date::text ILIKE ${`%${query}%`} OR
+      nextjs_invoices.status ILIKE ${`%${query}%`}
   `;
 
     const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
