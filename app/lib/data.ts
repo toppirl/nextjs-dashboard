@@ -143,12 +143,12 @@ export async function fetchInvoiceById(id: string) {
   try {
     const data = await sql<InvoiceForm>`
       SELECT
-        invoices.id,
-        invoices.customer_id,
-        invoices.amount,
-        invoices.status
-      FROM invoices
-      WHERE invoices.id = ${id};
+        nextjs_invoices.id,
+        nextjs_invoices.customer_id,
+        nextjs_invoices.amount,
+        nextjs_invoices.status
+      FROM nextjs_invoices
+      WHERE nextjs_invoices.id = ${id};
     `;
 
     const invoice = data.rows.map((invoice) => ({
@@ -170,7 +170,7 @@ export async function fetchCustomers() {
       SELECT
         id,
         name
-      FROM customers
+      FROM nextjs_customers
       ORDER BY name ASC
     `;
 
